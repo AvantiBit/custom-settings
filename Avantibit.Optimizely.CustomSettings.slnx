@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="./samples/AvantiBit.Optimizely.CustomSettings.Sample.Cms13/AvantiBit.Optimizely.CustomSettings.Sample.Cms13.csproj" />
+  <Project Path="./src/Avantibit.Optimizely.CustomSettings.csproj" />
+</Solution>

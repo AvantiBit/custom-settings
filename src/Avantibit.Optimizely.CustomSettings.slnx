@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="../alloy13preview/alloy13preview.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
+  <Project Path="../CustomSettings.Tests/CustomSettings.Tests.csproj" Id="ffb256f3-1e77-448e-bdf7-7410d425ccd0" />
+  <Project Path="Avantibit.Optimizely.CustomSettings.csproj" />
+</Solution>

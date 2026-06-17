@@ -1,0 +1,1546 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   Shared CSS variables — declared on both scopes so picker modals appended
+   to <body> with .cs-picker-root can resolve them without touching :root
+────────────────────────────────────────────────────────────────────────── */
+.custom-settings-admin,
+.cs-picker-root {
+    --cs-surface:            #f5f7fb;
+    --cs-card:               #ffffff;
+    --cs-border:             #dce3ee;
+    --cs-text-primary:       #1f2733;
+    --cs-text-secondary:     #556272;
+    --cs-link:               #2457d6;
+    --cs-link-hover:         #1b47b5;
+    --cs-accent-soft:        #e9efff;
+    --cs-accent-strong:      #d9e6ff;
+    --cs-danger:             #c0392b;
+    --cs-danger-bg:          #fff7f6;
+    --cs-danger-border:      rgba(192, 57, 43, 0.38);
+    --cs-radius-card:        12px;
+    --cs-radius-control:     8px;
+    --cs-radius-sm:          6px;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Custom Settings Admin
+   Visual language aligned with AvantiBit cookie-consent admin UI
+────────────────────────────────────────────────────────────────────────── */
+.custom-settings-admin {
+    --cs-btn-primary:        #0037ff;
+    --cs-btn-primary-hover:  #2f5bff;
+    --cs-btn-primary-active: #002ac7;
+    --cs-success-bg:         #e8f7ef;
+    --cs-success-text:       #1f6a46;
+    --cs-success-border:     #a8d5b5;
+    --cs-warning-bg:         #fff3e8;
+    --cs-warning-text:       #7a4400;
+    --cs-warning-border:     #e08000;
+    --cs-orange:             #e08000;
+    --cs-orange-light:       #fff8ee;
+    --cs-shadow-card:        0 8px 28px rgba(16, 24, 40, 0.08);
+
+    align-self: stretch;
+    background: var(--cs-surface);
+    box-sizing: border-box;
+    color: var(--cs-text-primary);
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    font-family: inherit;
+    font-weight: 300;
+    line-height: 1.6;
+    min-height: calc(100vh - 40px);
+    min-width: 0;
+    padding: 2.5rem 2rem 3rem;
+    width: 100%;
+}
+
+.custom-settings-admin *,
+.custom-settings-admin *::before,
+.custom-settings-admin *::after {
+    box-sizing: inherit;
+}
+
+/* ── Page header ─────────────────────────────────────────────────────────── */
+.custom-settings-admin .header,
+.custom-settings-admin .dashboard-header {
+    border-bottom: 1px solid rgba(220, 227, 238, 0.85);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+}
+
+.custom-settings-admin .header h1,
+.custom-settings-admin .dashboard-header h1 {
+    margin: 0;
+    color: var(--cs-text-primary);
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 600;
+    line-height: 1.3;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.custom-settings-admin .header h1 i,
+.custom-settings-admin .dashboard-header h1 i {
+    color: var(--cs-text-secondary);
+    font-size: 1.1rem;
+}
+
+.custom-settings-admin .header .description,
+.custom-settings-admin .dashboard-header p {
+    margin: 0;
+    color: var(--cs-text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 80ch;
+}
+
+/* ── Notifications ───────────────────────────────────────────────────────── */
+.custom-settings-admin .unsaved-changes-indicator {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: var(--cs-warning-bg);
+    border: 1px solid var(--cs-warning-border);
+    border-radius: var(--cs-radius-control);
+    margin-bottom: 1rem;
+    color: var(--cs-warning-text);
+    font-size: 0.875rem;
+    font-weight: 500;
+    max-width: 780px;
+}
+
+.custom-settings-admin .alert {
+    align-items: center;
+    border-radius: var(--cs-radius-control);
+    box-shadow: 0 4px 20px rgba(16, 24, 40, 0.14);
+    display: none;
+    font-size: 0.875rem;
+    gap: 0.5rem;
+    left: 50%;
+    max-width: 480px;
+    min-width: 260px;
+    padding: 0.75rem 1.25rem;
+    position: fixed;
+    top: 3.5rem;
+    transform: translateX(-50%);
+    width: max-content;
+    z-index: 10002;
+}
+
+.custom-settings-admin .alert-success {
+    background: var(--cs-success-bg);
+    color: var(--cs-success-text);
+    border: 1px solid var(--cs-success-border);
+}
+
+.custom-settings-admin .alert-error {
+    background: var(--cs-danger-bg);
+    color: var(--cs-danger);
+    border: 1px solid var(--cs-danger-border);
+}
+
+/* ── Context selector — quiet toolbar, not a colored panel ───────────────── */
+.custom-settings-admin .context-selector {
+    display: flex;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+    padding: 0.6rem 0.75rem;
+    background: var(--cs-surface);
+    border-radius: var(--cs-radius-sm);
+    border: 1px solid var(--cs-border);
+    align-items: flex-end;
+}
+
+/* ── Form groups ─────────────────────────────────────────────────────────── */
+.custom-settings-admin .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.custom-settings-admin .context-selector .form-group {
+    flex: 1;
+    max-width: 300px;
+}
+
+/* ── Labels — restrained, not overly uppercase ───────────────────────────── */
+.custom-settings-admin label {
+    display: block;
+    font-weight: 600;
+    color: var(--cs-text-secondary);
+    font-size: 0.8rem;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+}
+
+/* ── Form controls ───────────────────────────────────────────────────────── */
+.custom-settings-admin input[type="text"],
+.custom-settings-admin input[type="number"],
+.custom-settings-admin input[type="email"],
+.custom-settings-admin input[type="url"],
+.custom-settings-admin input[type="date"],
+.custom-settings-admin input[type="datetime-local"],
+.custom-settings-admin textarea {
+    width: 100%;
+    padding: 0.42rem 0.62rem;
+    border: 1px solid var(--cs-border);
+    border-radius: var(--cs-radius-control);
+    font-size: 0.875rem;
+    font-family: inherit;
+    background: var(--cs-card);
+    color: var(--cs-text-primary);
+    line-height: 1.4;
+    min-height: 2.2rem;
+    transition: border-color 0.16s ease;
+}
+
+/* Select — styled like cc-admin-select__trigger (appearance:none + custom chevron) */
+.custom-settings-admin select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: var(--cs-card);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%235e6f88' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-position: right 0.62rem center;
+    background-repeat: no-repeat;
+    background-size: 0.78rem 0.78rem;
+    border: 1px solid var(--cs-border);
+    border-radius: var(--cs-radius-control);
+    color: var(--cs-text-primary);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    min-height: 2.2rem;
+    padding: 0.42rem 1.95rem 0.42rem 0.62rem;
+    text-overflow: ellipsis;
+    transition: background-color 0.16s ease, border-color 0.16s ease;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.custom-settings-admin select:hover {
+    border-color: rgba(36, 87, 214, 0.38);
+}
+
+/* Context-selector selects — blue-tinted trigger matching cc-admin-select__trigger */
+.custom-settings-admin .context-selector select {
+    background-color: rgba(233, 239, 255, 0.28);
+    border-color: rgba(220, 227, 238, 0.98);
+    font-weight: 600;
+}
+
+.custom-settings-admin input:focus,
+.custom-settings-admin textarea:focus {
+    outline: none;
+    border-color: var(--cs-link);
+    box-shadow: none;
+}
+
+.custom-settings-admin select:focus {
+    outline: none;
+    background-color: var(--cs-card);
+    box-shadow: none;
+}
+
+.custom-settings-admin input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.custom-settings-admin .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.custom-settings-admin .checkbox-group label {
+    margin: 0;
+    font-weight: 400;
+    font-size: 0.875rem;
+    text-transform: none;
+    letter-spacing: 0;
+    cursor: pointer;
+    color: var(--cs-text-primary);
+}
+
+/* ── Field description ───────────────────────────────────────────────────── */
+.custom-settings-admin .field-description {
+    font-size: 0.8rem;
+    color: var(--cs-text-secondary);
+    margin-top: 0.2rem;
+    line-height: 1.5;
+}
+
+/* ── Validation ──────────────────────────────────────────────────────────── */
+.custom-settings-admin .validation-error {
+    color: var(--cs-danger);
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+    display: none;
+    font-weight: 500;
+    animation: cs-slideDown 0.25s ease-out;
+    min-height: 1.1rem;
+}
+
+.custom-settings-admin .field-error input,
+.custom-settings-admin .field-error select,
+.custom-settings-admin .field-error textarea {
+    border-color: var(--cs-danger);
+    background-color: var(--cs-danger-bg);
+}
+
+.custom-settings-admin .field-error label {
+    color: var(--cs-danger);
+}
+
+.custom-settings-admin .field-error .validation-error {
+    display: block;
+}
+
+/* ── Settings form ───────────────────────────────────────────────────────── */
+.custom-settings-admin .settings-form {
+    display: grid;
+    gap: 1rem;
+}
+
+/* ── Form actions ────────────────────────────────────────────────────────── */
+.custom-settings-admin .actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    padding-top: 0.95rem;
+    border-top: 1px solid var(--cs-border);
+    justify-content: flex-end;
+}
+
+/* ── Edit page card container (matches cc-admin-form) ────────────────────── */
+.custom-settings-admin .settings-edit-card {
+    background: var(--cs-card);
+    border: 1px solid rgba(220, 227, 238, 0.95);
+    border-radius: 12px;
+    margin-top: 1rem;
+    max-width: 780px;
+    /* No overflow:hidden — needed so the custom dropdown menu can escape */
+}
+
+.custom-settings-admin .settings-edit-card .context-selector {
+    background: rgba(233, 239, 255, 0.25);
+    border: none;
+    border-bottom: 1px solid rgba(220, 227, 238, 0.78);
+    border-radius: 11px 11px 0 0;
+    margin-bottom: 0;
+    max-width: none;
+    padding: 0.75rem 1rem;
+    position: relative;
+    z-index: 10;
+}
+
+/* ── Custom dropdown (replaces native <select> in context-selector) ────────── */
+.custom-settings-admin .cs-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.custom-settings-admin .cs-dropdown__trigger {
+    align-items: center;
+    background-color: rgba(233, 239, 255, 0.28);
+    border: 1px solid rgba(220, 227, 238, 0.98);
+    border-radius: 8px;
+    color: var(--cs-text-primary);
+    cursor: pointer;
+    display: flex;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    gap: 0.4rem;
+    line-height: 1.4;
+    min-height: 2.2rem;
+    padding: 0.42rem 0.62rem;
+    text-align: left;
+    transition: background-color 0.16s ease, border-color 0.16s ease;
+    width: 100%;
+}
+
+.custom-settings-admin .cs-dropdown__trigger:hover {
+    border-color: rgba(36, 87, 214, 0.38);
+}
+
+.custom-settings-admin .cs-dropdown.is-open .cs-dropdown__trigger {
+    background-color: var(--cs-card);
+    border-color: var(--cs-link);
+}
+
+.custom-settings-admin .cs-dropdown__value {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.custom-settings-admin .cs-dropdown__chevron {
+    align-items: center;
+    color: var(--cs-text-secondary);
+    display: flex;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.custom-settings-admin .cs-dropdown__chevron svg {
+    display: block;
+    height: 0.78rem;
+    width: 0.78rem;
+}
+
+.custom-settings-admin .cs-dropdown.is-open .cs-dropdown__chevron {
+    transform: rotate(180deg);
+}
+
+.custom-settings-admin .cs-dropdown__menu[hidden] {
+    display: none;
+}
+
+.custom-settings-admin .cs-dropdown__menu {
+    background: #fff;
+    border: 1px solid rgba(220, 227, 238, 0.98);
+    border-radius: 10px;
+    box-shadow: 0 14px 32px rgba(16, 24, 40, 0.16);
+    display: grid;
+    gap: 0.08rem;
+    left: 0;
+    list-style: none;
+    margin: 0.24rem 0 0;
+    max-height: 16rem;
+    min-width: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.32rem;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    z-index: 10001;
+}
+
+.custom-settings-admin .cs-dropdown__option {
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    color: var(--cs-text-primary);
+    cursor: pointer;
+    display: block;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.3;
+    min-height: 2rem;
+    padding: 0.34rem 0.46rem;
+    text-align: left;
+    width: 100%;
+}
+
+.custom-settings-admin .cs-dropdown__option:hover {
+    background: rgba(233, 239, 255, 0.6);
+}
+
+.custom-settings-admin .cs-dropdown__option[aria-selected="true"] {
+    background: rgba(233, 239, 255, 0.4);
+    font-weight: 600;
+}
+
+.custom-settings-admin .settings-edit-card .settings-form {
+    gap: 0;
+    max-width: none;
+}
+
+.custom-settings-admin .settings-edit-card .form-group {
+    padding: 0.75rem 1rem;
+}
+
+.custom-settings-admin .settings-edit-card .form-group + .form-group {
+    border-top: 1px solid rgba(220, 227, 238, 0.78);
+}
+
+.custom-settings-admin .settings-form .form-group input,
+.custom-settings-admin .settings-form .form-group textarea,
+.custom-settings-admin .settings-form .form-group select {
+    max-width: 560px;
+}
+
+.custom-settings-admin .settings-edit-card .actions {
+    border-top: 1px solid rgba(220, 227, 238, 0.78);
+    margin-top: 0;
+    max-width: none;
+    padding: 0.75rem 1rem 1rem;
+}
+
+/* ── Buttons — matches cc-admin-modal__button pattern ────────────────────── */
+.custom-settings-admin .btn {
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: var(--cs-radius-control);
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    gap: 0.35rem;
+    justify-content: center;
+    line-height: 1;
+    min-height: 2.1rem;
+    min-width: 5.4rem;
+    padding: 0.42rem 0.72rem;
+    text-decoration: none;
+    text-align: center;
+    vertical-align: middle;
+    transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.custom-settings-admin .btn:focus-visible {
+    outline: 2px solid var(--cs-link);
+    outline-offset: 2px;
+}
+
+.custom-settings-admin .btn-primary {
+    background: var(--cs-btn-primary);
+    border-color: transparent;
+    box-shadow: 0 1px 2px rgba(0, 22, 102, 0.18);
+    color: #fff;
+}
+
+.custom-settings-admin .btn-primary:hover {
+    background: var(--cs-btn-primary-hover);
+    box-shadow: 0 8px 20px rgba(0, 55, 255, 0.22);
+}
+
+.custom-settings-admin .btn-primary:active {
+    background: var(--cs-btn-primary-active);
+    transform: translateY(1px);
+}
+
+.custom-settings-admin .btn-secondary {
+    background: var(--cs-card);
+    border-color: rgba(220, 227, 238, 0.95);
+    color: var(--cs-text-primary);
+}
+
+.custom-settings-admin .btn-secondary:hover {
+    border-color: rgba(36, 87, 214, 0.38);
+}
+
+.custom-settings-admin .btn-danger {
+    background: var(--cs-danger-bg);
+    border-color: var(--cs-danger-border);
+    color: var(--cs-danger);
+}
+
+.custom-settings-admin .btn-danger:hover {
+    background: #fee9e7;
+    border-color: rgba(192, 57, 43, 0.56);
+}
+
+.custom-settings-admin .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.custom-settings-admin .btn-primary.has-changes {
+    animation: cs-pulse 2s infinite;
+}
+
+.custom-settings-admin .btn-primary.has-changes::before {
+    content: '●';
+    color: #fbbf24;
+    font-size: 0.7rem;
+    animation: cs-blink 1s infinite;
+}
+
+/* ── Loading state ───────────────────────────────────────────────────────── */
+.custom-settings-admin .loading {
+    text-align: center;
+    padding: 2.5rem;
+    color: var(--cs-text-secondary);
+    font-size: 0.9rem;
+}
+
+.custom-settings-admin .spinner {
+    border: 2px solid var(--cs-border);
+    border-top-color: var(--cs-btn-primary);
+    border-radius: 50%;
+    width: 1.75rem;
+    height: 1.75rem;
+    animation: cs-spin 0.8s linear infinite;
+    margin: 0 auto 0.75rem;
+}
+
+/* ── Array fields ────────────────────────────────────────────────────────── */
+.custom-settings-admin .array-field {
+    border: 1px solid var(--cs-border);
+    border-radius: var(--cs-radius-control);
+    padding: 0.75rem;
+    background: var(--cs-surface);
+    max-width: 560px;
+}
+
+.custom-settings-admin .array-item {
+    padding: 0.6rem 0.75rem;
+    margin-bottom: 0.4rem;
+    background: var(--cs-card);
+    border: 1px solid var(--cs-border);
+    border-radius: var(--cs-radius-control);
+    position: relative;
+}
+
+.custom-settings-admin .array-item-remove {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.4rem;
+    background: var(--cs-danger-bg);
+    color: var(--cs-danger);
+    border: 1px solid var(--cs-danger-border);
+    border-radius: var(--cs-radius-sm);
+    padding: 0.2rem 0.45rem;
+    cursor: pointer;
+    font-size: 0.72rem;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.custom-settings-admin .array-item-remove:hover {
+    background: #fee9e7;
+    border-color: rgba(192, 57, 43, 0.56);
+}
+
+.custom-settings-admin .array-add {
+    margin-top: 0.4rem;
+}
+
+/* ── Label container (label + fallback icon) ─────────────────────────────── */
+.custom-settings-admin .label-container {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-bottom: 0.2rem;
+}
+
+.custom-settings-admin .label-container label {
+    margin-bottom: 0;
+}
+
+/* Fallback icon — small and quiet, not distracting */
+.custom-settings-admin .fallback-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 0.95rem;
+    height: 0.95rem;
+    border-radius: 50%;
+    background: var(--cs-accent-soft);
+    color: var(--cs-link);
+    font-size: 0.55rem;
+    cursor: help;
+    flex-shrink: 0;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+}
+
+.custom-settings-admin .fallback-icon:hover {
+    opacity: 1;
+}
+
+/* ── Inheritance notice ──────────────────────────────────────────────────── */
+.custom-settings-admin .inheritance-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.3rem;
+    background: var(--cs-orange-light);
+    border-left: 2px solid var(--cs-orange);
+    border-radius: 0 var(--cs-radius-sm) var(--cs-radius-sm) 0;
+    font-size: 0.78rem;
+    color: var(--cs-warning-text);
+    animation: cs-fadeIn 0.2s ease-in;
+}
+
+.custom-settings-admin .inheritance-notice i {
+    color: var(--cs-orange);
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+    font-size: 0.78rem;
+}
+
+.custom-settings-admin .inheritance-notice strong {
+    font-weight: 600;
+}
+
+.custom-settings-admin .form-group:has(.inheritance-notice) {
+    padding: 0.75rem;
+    background: #fafbff;
+    border-radius: var(--cs-radius-control);
+    border: 1px solid var(--cs-border);
+}
+
+.custom-settings-admin .form-group:has(.inheritance-notice):hover {
+    border-color: rgba(224, 128, 0, 0.4);
+}
+
+/* ── Fallback value input ────────────────────────────────────────────────── */
+.custom-settings-admin input.has-fallback-value {
+    border-left: 2px solid var(--cs-orange);
+    background: #fffbf5;
+}
+
+.custom-settings-admin input.has-fallback-value::placeholder {
+    color: var(--cs-orange);
+    font-style: italic;
+    opacity: 0.85;
+}
+
+.custom-settings-admin input.has-fallback-value:focus {
+    border-left-color: var(--cs-orange);
+    background: var(--cs-card);
+}
+
+/* ── Dashboard — settings index grid (matches cc-admin-landing__cards) ──── */
+.custom-settings-admin .settings-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    margin-top: 0.5rem;
+}
+
+/* Matches cc-dashboard-card */
+.custom-settings-admin .settings-card {
+    background: var(--cs-card);
+    border: 1px solid var(--cs-border);
+    border-top: 3px solid var(--cs-accent-soft);
+    border-radius: var(--cs-radius-card);
+    box-shadow: var(--cs-shadow-card);
+    color: inherit;
+    cursor: pointer;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 1rem;
+    min-width: 0;
+    padding: 1.5rem;
+    text-decoration: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.custom-settings-admin .settings-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(36, 87, 214, 0.35);
+    box-shadow: 0 12px 32px rgba(16, 24, 40, 0.12);
+}
+
+.custom-settings-admin .settings-card:focus-visible {
+    outline: 2px solid var(--cs-link);
+    outline-offset: 2px;
+    border-radius: var(--cs-radius-card);
+}
+
+/* Matches cc-dashboard-card__header */
+.custom-settings-admin .settings-card-header {
+    min-width: 0;
+}
+
+
+/* Matches cc-dashboard-card__title */
+.custom-settings-admin .settings-card-title {
+    margin: 0;
+    color: var(--cs-text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    min-width: 0;
+}
+
+/* Matches cc-dashboard-card__description */
+.custom-settings-admin .settings-card-description {
+    margin: 0;
+    color: var(--cs-text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    min-width: 0;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+.custom-settings-admin .empty-state {
+    background: var(--cs-card);
+    padding: 2.5rem 1.5rem;
+    border-radius: var(--cs-radius-card);
+    border: 1px solid var(--cs-border);
+    box-shadow: var(--cs-shadow-card);
+    text-align: center;
+}
+
+.custom-settings-admin .empty-state-icon {
+    font-size: 2.5rem;
+    color: #b0bec5;
+    margin-bottom: 0.75rem;
+}
+
+.custom-settings-admin .empty-state h2 {
+    font-size: 1rem;
+    color: var(--cs-text-secondary);
+    margin: 0 0 0.4rem 0;
+    font-weight: 500;
+}
+
+.custom-settings-admin .empty-state p {
+    color: #8896a6;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+/* ── DateTime picker wrapper ─────────────────────────────────────────────── */
+.custom-settings-admin .epi-dijit-datetime-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+/* ── URL Picker / Page Reference ─────────────────────────────────────────── */
+.custom-settings-admin .url-picker,
+.custom-settings-admin .page-reference-field {
+    width: 100%;
+    max-width: 560px;
+}
+
+/* Picker button — blue outline, compact */
+.custom-settings-admin .epi-picker-btn {
+    align-items: center;
+    background: transparent;
+    border: 1px solid var(--cs-link);
+    border-radius: var(--cs-radius-control);
+    color: var(--cs-link);
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    gap: 0.3rem;
+    line-height: 1;
+    min-height: 2rem;
+    padding: 0.35rem 0.75rem;
+    text-decoration: none;
+    transition: background 0.15s;
+    white-space: nowrap;
+}
+
+.custom-settings-admin .epi-picker-btn:hover {
+    background: var(--cs-accent-soft);
+}
+
+.custom-settings-admin .epi-picker-btn:focus-visible {
+    outline: 2px solid var(--cs-link);
+    outline-offset: 2px;
+}
+
+.custom-settings-admin .epi-picker-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.custom-settings-admin .epi-picker-btn i {
+    font-size: 0.72rem;
+}
+
+/* Picker display */
+.custom-settings-admin .epi-picker-display {
+    align-items: center;
+    background: var(--cs-surface);
+    border: 1px solid var(--cs-border);
+    border-radius: var(--cs-radius-control);
+    display: flex;
+    font-size: 0.8rem;
+    gap: 0.45rem;
+    max-width: 100%;
+    min-height: 2.2rem;
+    overflow: hidden;
+    padding: 0.42rem 0.62rem;
+}
+
+.custom-settings-admin .epi-picker-display__placeholder {
+    color: #8896a6;
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+.custom-settings-admin .epi-picker-display__icon {
+    align-items: center;
+    color: var(--cs-text-secondary);
+    display: flex;
+    flex-shrink: 0;
+    font-size: 0.78rem;
+}
+
+.custom-settings-admin .epi-picker-display__text {
+    color: var(--cs-text-primary);
+    flex: 1;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.custom-settings-admin .epi-picker-display__url {
+    color: var(--cs-link);
+    flex-shrink: 1;
+    font-family: monospace;
+    font-size: 0.7rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.custom-settings-admin .epi-picker-display__remove {
+    background: transparent;
+    border: none;
+    border-radius: var(--cs-radius-sm);
+    color: var(--cs-text-secondary);
+    cursor: pointer;
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    line-height: 1;
+    padding: 0.2rem 0.3rem;
+    transition: background 0.15s, color 0.15s;
+}
+
+.custom-settings-admin .epi-picker-display__remove:hover {
+    background: #fee9e7;
+    color: var(--cs-danger);
+}
+
+.custom-settings-admin .epi-picker-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.4rem;
+}
+
+/* ── Page picker overlay ─────────────────────────────────────────────────── */
+.page-picker-overlay.cs-picker-root {
+    align-items: center;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    padding: 1rem;
+    position: fixed;
+    z-index: 10000;
+}
+
+.cs-picker-root .page-picker-modal {
+    background: #fff;
+    border: 1px solid #d0d5dd;
+    border-radius: 4px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+    max-height: 82vh;
+    max-width: min(95vw, 540px);
+    overflow: hidden;
+    width: 540px;
+}
+
+.cs-picker-root .link-picker-modal {
+    border: 1px solid #d0d5dd;
+    border-radius: 4px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    max-width: min(95vw, 600px);
+    width: 600px;
+}
+
+.cs-picker-root .page-picker-header {
+    align-items: center;
+    background: hsl(0, 0%, 98%);
+    border-bottom: 1px solid #d8dde5;
+    box-shadow: inset 0 2px 2px rgba(204, 204, 204, 0.1);
+    color: hsl(241, 77%, 12%);
+    display: flex;
+    flex-shrink: 0;
+    font-family: Inter, sans-serif;
+    font-size: 1.25em;
+    font-weight: 500;
+    justify-content: space-between;
+    padding: 9px 7px 8px 12px;
+}
+
+.cs-picker-root .page-picker-header i {
+    color: var(--cs-link);
+    margin-right: 0.35rem;
+}
+
+.cs-picker-root .page-picker-close {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: 3px;
+    color: #5e6e85;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1.1rem;
+    font-weight: 400;
+    height: 1.75rem;
+    justify-content: center;
+    line-height: 1;
+    padding: 0 0.375rem;
+    transition: background 0.15s, color 0.15s;
+}
+
+.cs-picker-root .page-picker-close:hover {
+    background: #e2e6ec;
+    color: hsl(241, 77%, 12%);
+}
+
+.cs-picker-root .page-picker-search-area {
+    background: #fff;
+    border-bottom: 1px solid #e8ecf2;
+    flex-shrink: 0;
+    padding: 0.625rem 0.875rem;
+}
+
+.cs-picker-root .page-picker-search {
+    background: var(--cs-card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23556272' stroke-width='2.5'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 0.5rem 50%;
+    border: 1px solid var(--cs-border);
+    border-radius: var(--cs-radius-control);
+    box-sizing: border-box;
+    color: var(--cs-text-primary);
+    font-family: inherit;
+    font-size: 0.8rem;
+    padding: 0.42rem 0.75rem 0.42rem 2rem;
+    width: 100%;
+}
+
+.cs-picker-root .page-picker-search:focus {
+    border-color: var(--cs-link);
+    box-shadow: none;
+    outline: none;
+}
+
+.cs-picker-root .page-picker-results {
+    flex: 1;
+    list-style: none;
+    margin: 0;
+    overflow-y: auto;
+    padding: 0.25rem 0 0.5rem;
+}
+
+/* ── Page tree ───────────────────────────────────────────────────────────── */
+.cs-picker-root .page-picker-tree-item,
+.cs-picker-root .page-picker-children {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.cs-picker-root .page-picker-row {
+    align-items: center;
+    border-bottom: 1px solid #f5f7fb;
+    cursor: pointer;
+    display: flex;
+    gap: 0.4rem;
+    min-height: 2.25rem;
+    padding: 0.4rem 0.75rem 0.4rem 0.875rem;
+    transition: background 0.1s;
+}
+
+.cs-picker-root .page-picker-row:hover {
+    background: var(--cs-accent-soft);
+}
+
+.cs-picker-root .page-picker-toggle {
+    align-items: center;
+    color: var(--cs-text-secondary);
+    display: flex;
+    flex-shrink: 0;
+    height: 1rem;
+    justify-content: center;
+    transition: color 0.1s;
+    width: 1rem;
+}
+
+.cs-picker-root .page-picker-toggle:hover {
+    color: var(--cs-link);
+}
+
+.cs-picker-root .page-picker-toggle-spacer {
+    display: inline-block;
+    width: 1rem;
+}
+
+.cs-picker-root .page-picker-chevron {
+    font-size: 0.65rem;
+    transition: transform 0.2s ease;
+}
+
+.cs-picker-root .page-picker-icon {
+    align-items: center;
+    color: hsl(241, 77%, 12%);
+    display: flex;
+    flex-shrink: 0;
+    font-size: 1rem;
+    width: 1.25rem;
+}
+
+.cs-picker-root .page-picker-info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.05rem;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.cs-picker-root .page-picker-result-name {
+    color: hsl(241, 77%, 12%);
+    font-family: Inter, sans-serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cs-picker-root .page-picker-result-url {
+    color: var(--cs-link);
+    font-family: monospace;
+    font-size: 0.68rem;
+    opacity: 0.85;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cs-picker-root .page-picker-breadcrumb {
+    color: var(--cs-text-secondary);
+    font-size: 0.68rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cs-picker-root .page-picker-result {
+    cursor: pointer;
+    list-style: none;
+}
+
+.cs-picker-root .page-picker-result--empty,
+.cs-picker-root .page-picker-result--loading {
+    align-items: center;
+    color: var(--cs-text-secondary);
+    cursor: default;
+    display: flex;
+    font-size: 0.875rem;
+    font-style: italic;
+    gap: 0.5rem;
+    justify-content: center;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.cs-picker-root .page-picker-result--empty:hover,
+.cs-picker-root .page-picker-result--loading:hover {
+    background: none;
+}
+
+/* ── Link picker ─────────────────────────────────────────────────────────── */
+.cs-picker-root .link-picker-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    font-family: Inter, sans-serif;
+    gap: 0;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.cs-picker-root .link-option-row {
+    border-bottom: 1px solid #eaecef;
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem 1.25rem;
+}
+
+.cs-picker-root .link-option-row:last-child {
+    border-bottom: none;
+}
+
+.cs-picker-root .link-option-label {
+    align-items: center;
+    color: hsl(241, 77%, 12%);
+    cursor: pointer;
+    display: flex;
+    font-family: Inter, sans-serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+    gap: 0.5rem;
+    letter-spacing: 0;
+    margin: 0;
+    text-transform: none;
+    width: auto;
+}
+
+.cs-picker-root .link-option-label input[type="radio"] {
+    accent-color: #2457d6;
+    cursor: pointer;
+    flex-shrink: 0;
+    height: 0.9375rem;
+    margin: 0;
+    margin-top: 0.1rem;
+    width: 0.9375rem;
+}
+
+.cs-picker-root .link-option-input-wrap {
+    align-items: center;
+    background: #ebebeb;
+    border: 1px solid #c8cdd4;
+    border-radius: 8px;
+    display: flex;
+    min-height: 3.25rem;
+    overflow: hidden;
+    padding: 0;
+}
+
+.cs-picker-root .link-option-row.is-selected .link-option-input-wrap {
+    background: #fff;
+    border-color: #c8d4e6;
+}
+
+.cs-picker-root .link-picker-input {
+    background: transparent;
+    border: none;
+    color: #1d2c4d;
+    flex: 1;
+    font-family: Inter, sans-serif;
+    font-size: 0.875rem;
+    min-width: 0;
+    outline: none;
+    padding: 0.35rem 0.875rem;
+    width: 100%;
+}
+
+.cs-picker-root .link-picker-input::placeholder {
+    color: #a0aab6;
+    font-style: italic;
+}
+
+.cs-picker-root .link-picker-input:focus {
+    border: none;
+    box-shadow: none;
+    outline: none;
+}
+
+.cs-picker-root .link-picker-input:disabled {
+    color: #a0aab6;
+    cursor: not-allowed;
+}
+
+.cs-picker-root .link-picker-browse {
+    align-self: stretch;
+    background: #fff;
+    border: none;
+    border-left: 1px solid #dce3ee;
+    border-radius: 0;
+    color: #2457d6;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-family: inherit;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    padding: 0 0.875rem;
+    transition: background 0.12s ease;
+    white-space: nowrap;
+}
+
+.cs-picker-root .link-picker-browse:hover:not(:disabled) {
+    background: #eef2ff;
+}
+
+.cs-picker-root .link-picker-browse:disabled {
+    color: #aab4c0;
+    cursor: not-allowed;
+}
+
+.cs-picker-root .link-option-browse-row {
+    display: none;
+}
+
+/* Link picker modal — Optimizely "Create Link" style (from dijitDialogTitleBar) */
+.cs-picker-root .link-picker-modal .page-picker-header {
+    background: hsl(0, 0%, 98%);
+    border-bottom: 1px solid #d8dde5;
+    box-shadow: inset 0 2px 2px rgba(204, 204, 204, 0.1);
+    color: #1d2c4d;
+    font-family: Inter, sans-serif;
+    font-size: 1.25em;
+    font-weight: 500;
+    padding: 9px 7px 8px 12px;
+}
+
+.cs-picker-root .link-picker-modal .page-picker-header i {
+    display: none;
+}
+
+.cs-picker-root .link-picker-modal .page-picker-close {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: 3px;
+    color: #5e6e85;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1.1rem;
+    font-weight: 400;
+    height: 1.75rem;
+    justify-content: center;
+    line-height: 1;
+    padding: 0 0.375rem;
+    transition: background 0.15s, color 0.15s;
+}
+
+.cs-picker-root .link-picker-modal .page-picker-close:hover {
+    background: #e2e6ec;
+    color: #1d2c4d;
+}
+
+/* Dropzone variant (internal page, media) */
+.cs-picker-root .link-option-input-wrap--dropzone {
+    align-items: center;
+    gap: 0;
+    padding: 0;
+}
+
+.cs-picker-root .link-option-drop-icon {
+    align-items: center;
+    color: #a0aab6;
+    display: flex;
+    flex-shrink: 0;
+    font-size: 0.9375rem;
+    padding: 0 0.4rem 0 1rem;
+    transition: color 0.15s;
+}
+
+.cs-picker-root .link-option-drop-text {
+    color: #a0aab6;
+    flex: 1;
+    font-size: 0.875rem;
+    transition: color 0.15s;
+    white-space: nowrap;
+}
+
+.cs-picker-root .link-option-row.is-selected .link-option-drop-icon,
+.cs-picker-root .link-option-row.is-selected .link-option-drop-text {
+    color: #2457d6;
+}
+
+.cs-picker-root .link-option-input-wrap--dropzone.has-value .link-option-drop-icon,
+.cs-picker-root .link-option-input-wrap--dropzone.has-value .link-option-drop-text {
+    display: none;
+}
+
+.cs-picker-root .link-option-input-wrap--dropzone .link-picker-input {
+    display: none;
+}
+
+.cs-picker-root .link-option-input-wrap--dropzone.has-value {
+    border-color: #2457d6;
+    min-height: 2.5rem;
+}
+
+.cs-picker-root .link-option-input-wrap--dropzone.has-value .link-picker-input {
+    display: none;
+}
+
+/* Value display (doc icon + page name) */
+.cs-picker-root .link-option-value-display {
+    align-items: center;
+    display: none;
+    flex: 1;
+    gap: 0.5rem;
+    min-width: 0;
+    overflow: hidden;
+    padding: 0 0.75rem;
+}
+
+.cs-picker-root .link-option-input-wrap--dropzone.has-value .link-option-value-display,
+.cs-picker-root .link-option-input-wrap--browse.has-value .link-option-value-display {
+    display: flex;
+}
+
+.cs-picker-root .link-option-value-icon {
+    color: #5e6e85;
+    flex-shrink: 0;
+    font-size: 0.875rem;
+}
+
+.cs-picker-root .link-option-value-name {
+    color: #1d2c4d;
+    flex: 1;
+    font-family: Inter, sans-serif;
+    font-size: 0.875rem;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Browse button — Optimizely style: floating bordered button inside drop zone */
+.cs-picker-root .link-option-row--browse .link-picker-browse {
+    background: #fff;
+    border: 1px solid #2457d6;
+    border-radius: 4px;
+    color: #2457d6;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-family: Inter, sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    margin: auto 0.5rem;
+    padding: 0.35rem 0.875rem;
+    transition: background 0.12s ease;
+    white-space: nowrap;
+}
+
+.cs-picker-root .link-option-row--browse .link-picker-browse:hover:not(:disabled) {
+    background: #eef2ff;
+}
+
+.cs-picker-root .link-option-row--browse .link-picker-browse:disabled {
+    border-color: #c8d0da;
+    color: #b0bac6;
+    cursor: not-allowed;
+}
+
+.cs-picker-root .link-picker-footer {
+    background: #fff;
+    border-top: 1px solid #e2e6ec;
+    display: flex;
+    flex-shrink: 0;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    padding: 0.75rem 1.25rem;
+}
+
+/* ── Buttons inside picker modals ─────────────────────────────────────────── */
+.cs-picker-root .link-picker-footer .btn {
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    justify-content: center;
+    line-height: 1;
+    min-height: 2.1rem;
+    min-width: 4rem;
+    padding: 0.42rem 1rem;
+    transition: background-color 0.18s ease;
+}
+
+.cs-picker-root .link-picker-footer .btn-primary {
+    background: #2457d6;
+    box-shadow: none;
+    color: #fff;
+}
+
+.cs-picker-root .link-picker-footer .btn-primary:hover {
+    background: #1b47b5;
+}
+
+.cs-picker-root .link-picker-footer .btn-secondary {
+    background: transparent;
+    border-color: transparent;
+    color: #1d2c4d;
+}
+
+.cs-picker-root .link-picker-footer .btn-secondary:hover {
+    background: #f0f2f7;
+    border-color: transparent;
+}
+
+/* ── Keyframe animations ─────────────────────────────────────────────────── */
+@keyframes cs-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes cs-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.6); }
+    50%       { box-shadow: 0 0 0 6px rgba(251, 191, 36, 0); }
+}
+
+@keyframes cs-blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+}
+
+@keyframes cs-slideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cs-fadeIn {
+    from { opacity: 0; transform: translateY(-3px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .custom-settings-admin {
+        padding: 1.25rem 1rem 2rem;
+    }
+
+    .custom-settings-admin .context-selector {
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .custom-settings-admin .actions {
+        flex-wrap: wrap;
+    }
+
+    .custom-settings-admin .actions .btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .cs-picker-root .page-picker-modal {
+        border-radius: var(--cs-radius-control);
+        max-height: calc(100vh - 1rem);
+        width: calc(100vw - 1rem);
+    }
+
+    .cs-picker-root .link-picker-footer {
+        justify-content: stretch;
+    }
+
+    .cs-picker-root .link-picker-footer .btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-settings-admin .header h1,
+    .custom-settings-admin .dashboard-header h1 {
+        font-size: 1.1rem;
+    }
+
+    .custom-settings-admin .settings-card {
+        padding: 1rem;
+    }
+}
