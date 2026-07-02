@@ -75,5 +75,3 @@ logs/
 /.dotnet_home
 /.nuget
 /src/modules/_protected
-/CustomSettings.Tests/modules/_protected
-/alloy13preview/modules/_protected

@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      CSPROJ: src/Avantibit.Optimizely.CustomSettings.csproj
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Derive version from tag
+        id: ver
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$' \
+            || { echo "::error::Tag '$GITHUB_REF_NAME' is not a valid v<semver> tag"; exit 1; }
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      # Tags carry no branch information, so validate the tag against the
+      # content it points at: a v1 tag must see CMS 12 dependencies, a v2 tag CMS 13.
+      - name: Guard - tag major must match CMS version
+        run: |
+          VERSION="${{ steps.ver.outputs.version }}"
+          MAJOR="${VERSION%%.*}"
+          CMS_RANGE=$(grep -oP 'Include="EPiServer\.CMS" Version="\K[^"]+' "$CSPROJ")
+          echo "Tag major=$MAJOR, EPiServer.CMS range=$CMS_RANGE"
+          case "$MAJOR" in
+            1) echo "$CMS_RANGE" | grep -q '^\[12\.' || { echo "::error::v1 tag but content is not CMS 12"; exit 1; } ;;
+            2) echo "$CMS_RANGE" | grep -q '^\[13\.' || { echo "::error::v2 tag but content is not CMS 13"; exit 1; } ;;
+            *) echo "::error::Unexpected major version $MAJOR"; exit 1 ;;
+          esac
+
+      - name: Pack
+        run: |
+          dotnet pack "$CSPROJ" -c Release \
+            -p:Version=${{ steps.ver.outputs.version }} \
+            -p:ContinuousIntegrationBuild=true \
+            -o artifacts
+
+      - name: Push to nuget.org
+        run: |
+          dotnet nuget push "artifacts/*.nupkg" \
+            --api-key "${{ secrets.NUGET_API_KEY }}" \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
+
+      # Note for future releases: --generate-notes picks the previous tag across
+      # ALL lineages. Once both v1.x and v2.x tags exist, add
+      # --notes-start-tag "$(git tag -l "v${MAJOR}.*" --sort=-v:refname | sed -n 2p)"
+      # so 1.x notes are not generated against a 2.x tag (and vice versa).
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" artifacts/*.nupkg artifacts/*.snupkg \
+            --title "Avantibit.Optimizely.CustomSettings ${{ steps.ver.outputs.version }}" \
+            --generate-notes

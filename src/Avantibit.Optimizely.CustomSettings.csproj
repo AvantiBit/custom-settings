@@ -5,18 +5,35 @@
 		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<UserSecretsId>5fe0be17-fd44-4772-a1eb-ab34828ecb88</UserSecretsId>
 		<GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
 		<StaticWebAssetBasePath>_content/Avantibit.Optimizely.CustomSettings</StaticWebAssetBasePath>
 		
 		<PackageId>Avantibit.Optimizely.CustomSettings</PackageId>
 		<Version>2.0.0</Version>
-		<Authors>Avantibit</Authors>
-		<Company>Avantibit</Company>
+		<Authors>AvantiBit</Authors>
+		<Company>AvantiBit AB</Company>
 		<Description>Custom settings management for Optimizely CMS.</Description>
 		<PackageTags>optimizely;episerver;cms;settings</PackageTags>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/AvantiBit/custom-settings</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/AvantiBit/custom-settings</PackageProjectUrl>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
+		<Copyright>Copyright © AvantiBit AB</Copyright>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="PackageReadme.md" Pack="true" PackagePath="\" />
+		<None Include="icon.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
@@ -36,8 +53,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="EPiServer.CMS" Version="13.1.0" />
-		<PackageReference Include="EPiServer.CMS.Core" Version="13.1.0" />
+		<PackageReference Include="EPiServer.CMS" Version="[13.1.0,14.0.0)" />
+		<PackageReference Include="EPiServer.CMS.Core" Version="[13.1.0,14.0.0)" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8">

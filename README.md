@@ -1,6 +1,11 @@
 # Avantibit.Optimizely.CustomSettings
 
-A library for managing custom settings in Optimizely CMS 12 applications. This library provides a type-safe way to manage site and language-specific configuration values with built-in caching, automatic discovery, and an admin interface.
+A library for managing custom settings in Optimizely CMS applications. This library provides a type-safe way to manage site and language-specific configuration values with built-in caching, automatic discovery, and an admin interface.
+
+| NuGet version | Optimizely CMS version | Branch | Sample |
+|---|---|---|---|
+| 2.x | CMS 13 | main | samples/AvantiBit.Optimizely.CustomSettings.Sample.Cms13 |
+| 1.x | CMS 12 | support/cms12 | samples/CustomSettings.Sample.Cms12 |
 
 ## Features
 
