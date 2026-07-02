@@ -37,8 +37,19 @@ The library uses Entity Framework Core migrations. The database schema will be a
 
 ## Configuration
 
+### 1. Add Connection String
 
-### 1. Register Services
+In your `appsettings.json`, ensure you have a connection string named `EPiServerDB`:
+
+```json
+{
+  "ConnectionStrings": {
+    "EPiServerDB": "Server=(localdb)\\mssqllocaldb;Database=YourDatabase;Trusted_Connection=True;"
+  }
+}
+```
+
+### 2. Register Services
 
 In your `Startup.cs`, add the custom settings services:
 
@@ -58,7 +69,7 @@ public class Startup
 }
 ```
 
-### 2. Register endpoints
+### 3. Register endpoints
 
 In your `Startup.cs`, ensure you have the necessary endpoints configured:
 ```csharp
@@ -145,7 +156,9 @@ public class SiteSettings
 - `EPiServer.Url` opens the Optimizely URL picker (link to pages, media, or external URLs), while `ContentReference` opens the Optimizely content picker for selecting a content item directly
 - Properties with unsupported types are **skipped with a warning** in the logs — they will not appear in the admin form
 
+## Usage
 
+### 1. Define a Settings Class
 
 Create a class decorated with the `[SettingsGroup]` attribute:
 
@@ -186,7 +199,7 @@ public class SiteSettings
 }
 ```
 
-### 3. Inject and Use Settings
+### 2. Inject and Use Settings
 
 In your controllers, views, or services, inject `ICustomSettingsService<T>`:
 
@@ -215,7 +228,7 @@ public class HomeController : Controller
 }
 ```
 
-### 4. Save Settings Programmatically
+### 3. Save Settings Programmatically
 
 ```csharp
 public async Task UpdateSettings()
@@ -228,7 +241,7 @@ public async Task UpdateSettings()
 }
 ```
 
-### 5. Delete Settings
+### 4. Delete Settings
 
 ```csharp
 public async Task RemoveSettings()
@@ -243,7 +256,7 @@ public async Task RemoveSettings()
 }
 ```
 
-### 6. Work with Specific Site/Language
+### 5. Work with Specific Site/Language
 
 ```csharp
 // Get settings for a specific site and language
@@ -257,7 +270,7 @@ await _settingsService.SaveAsync(settings, siteId, "en");
 await _settingsService.DeleteAsync(siteId, "fr");
 ```
 
-### 7. Restrict Access with Authorization Policy
+### 6. Restrict Access with Authorization Policy
 
 You can restrict visibility of a settings group in the admin menu to specific roles using the `AuthorizationPolicy` property.
 
@@ -320,7 +333,7 @@ Marks a class as a custom settings group.
 - `AuthorizationPolicy` (string, optional) - Authorization policy name
 
 #### `[FallbackToMasterLanguage]`
-Marks a property to fallback to the master/default language value when the current language value is null.
+Marks a property to fall back to the master/default language value when the current language has no value (null, an empty/whitespace string, or a default value-type value).
 
 **Usage:**
 ```csharp
@@ -362,22 +375,29 @@ Task<bool> DeleteAsync(
 - `cancellationToken` - Cancellation token for async operations
 
 #### `ISettingsCacheService`
-Service for managing settings cache.
+Pre-populated in-memory settings cache, synchronized across servers by a polling service.
 
 ```csharp
-T? Get<T>(string groupName, Guid? siteId, string? languageCode) where T : class;
-void Set<T>(string groupName, T value, Guid? siteId, string? languageCode) where T : class;
-void Remove(string groupName, Guid? siteId, string? languageCode);
-void Clear();
+// Get a defensive copy of cached settings (returns a default instance if not found)
+T Get<T>(Guid? siteId, string? languageCode) where T : class, new();
+
+// Reload all settings from the database, atomically swapping the cache contents
+Task LoadAllAsync(CancellationToken cancellationToken = default);
+
+// Cache statistics for monitoring (entries, hits, misses, hit ratio)
+CacheStatistics GetStatistics();
 ```
 
 #### `ISettingsRepository`
 Repository interface for data access.
 
 ```csharp
-Task<string?> GetSettingsAsync(string groupName, Guid? siteId, string? languageCode, CancellationToken cancellationToken = default);
-Task SaveSettingsAsync(string groupName, string jsonData, Guid? siteId, string? languageCode, CancellationToken cancellationToken = default);
-Task<bool> DeleteSettingsAsync(string groupName, Guid? siteId, string? languageCode, CancellationToken cancellationToken = default);
+Task<SettingsEntity?> GetAsync(string settingsType, Guid? siteId, string? languageCode, CancellationToken cancellationToken = default);
+Task SaveAsync(SettingsEntity entity, CancellationToken cancellationToken = default);
+Task<bool> DeleteAsync(string settingsType, Guid? siteId, string? languageCode, CancellationToken cancellationToken = default);
+Task<List<SettingsEntity>> GetAllAsync(CancellationToken cancellationToken = default);
+Task<long> GetVersionAsync(CancellationToken cancellationToken = default);
+Task IncrementVersionAsync(CancellationToken cancellationToken = default);
 ```
 
 ### Service Registration
@@ -392,14 +412,32 @@ Extension method to register all custom settings services.
 - `ICustomSettingsService<T>` / `CustomSettingsService<T>` - Generic settings service (scoped)
 - `ISettingsDiscoveryService` / `SettingsDiscoveryService` - Discovery (singleton)
 - `ISettingsSchemaBuilder` / `SettingsSchemaBuilder` - Schema generation (singleton)
+- `ISettingsViewModelFactory` / `SettingsViewModelFactory` - Admin form view models (singleton)
+- `CustomSettingsMigrationHostedService` - Applies EF Core migrations at startup (hosted service)
 - `SettingsDiscoveryHostedService` - Startup discovery (hosted service)
+- `SettingsCachePollingService` - Cross-server cache synchronization (hosted service)
+
+It also registers the default authorization policy (WebAdmins/WebEditors/CmsAdmins/CmsEditors), adds the library as an MVC application part, and configures admin view discovery. The context resolvers (`ISiteContextResolver`, `ILanguageContextResolver`, `ISettingsFallbackResolver`) are registered through Optimizely's `[ServiceConfiguration]` attribute.
+
+#### `AddCustomSettings(IConfiguration configuration, Action<SettingsCacheOptions> configureCacheOptions)`
+Overload to customize cross-server cache synchronization:
+
+```csharp
+services.AddCustomSettings(_configuration, options =>
+{
+    options.PollingIntervalSeconds = 30; // default: 10
+    options.MaxJitterSeconds = 5;        // default: 2
+});
+```
+
+The polling service watches a version counter in the database and reloads the cache when settings are changed on another server.
 
 ## Admin Interface
 
 Once configured, the custom settings management interface is available in the Optimizely CMS admin menu:
 
 1. Log in to your Optimizely CMS admin interface
-2. Navigate to **Add-ons** > **Custom Settings** (or your configured menu location)
+2. Navigate to **Custom Settings** in the CMS admin menu (each settings group appears as a sub-item)
 3. Select the settings group you want to manage
 4. Choose the site and language
 5. Edit the settings using the generated form
@@ -409,7 +447,6 @@ The admin interface provides:
 - Dropdown selection for site and language
 - Auto-generated forms based on your settings class
 - Real-time validation based on data annotations
-- JSON editor for advanced scenarios
 
 ## Troubleshooting Guide
 
@@ -476,9 +513,9 @@ dotnet ef database update --project YourProject
 **Problem:** Old values are returned after saving.
 
 **Solution:**
-1. The cache automatically invalidates on save
-2. If issues persist, inject `ISettingsCacheService` and call `Clear()`
-3. Check for multiple application instances without distributed cache
+1. The cache automatically reloads on save; other servers pick up changes via the polling service (default: every 10 seconds)
+2. If issues persist, inject `ISettingsCacheService` and call `LoadAllAsync()` to force a full reload
+3. Use `GetStatistics()` to inspect cache entries and hit ratio
 
 ---
 
@@ -489,7 +526,7 @@ dotnet ef database update --project YourProject
 **Solution:**
 1. Ensure the master/default language is properly configured in Optimizely
 2. Verify that the fallback attribute is applied to the property
-3. The property must be null or empty for fallback to occur
+3. The property must be null, an empty/whitespace string, or a default value-type value for fallback to occur
 
 ---
 
@@ -539,6 +576,6 @@ To troubleshoot issues, enable detailed logging in `appsettings.json`:
 
 ### Performance Considerations
 
-1. **Caching:** Settings are cached by default. Cache keys include site, language, and group name.
+1. **Caching:** Settings are cached by default. Cache keys include site, language, and settings type.
 2. **Discovery:** Settings discovery runs once at startup. Performance impact is minimal.
-3. **Database queries:** Indexed by GroupName, SiteId, and LanguageCode for optimal performance.
+3. **Database queries:** Indexed by SettingsType, SiteId, and LanguageCode for optimal performance.
