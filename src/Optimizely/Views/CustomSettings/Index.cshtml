@@ -1,0 +1,61 @@
+@using Avantibit.Optimizely.CustomSettings.Discovery
+@using EPiServer.Framework.Web.Resources
+@using EPiServer.Shell.Navigation
+@model IReadOnlyCollection<SettingsGroupInfo>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title>Custom Settings - Dashboard</title>
+
+    <!-- Shell Core Resources -->
+    @ClientResources.RenderResources("ShellCore")
+
+    <!-- Light Theme -->
+    @ClientResources.RenderResources("ShellCoreLightTheme")
+
+    <!-- Custom Settings Styles - from Static Web Assets -->
+    <link rel="stylesheet" href="~/_content/Avantibit.Optimizely.CustomSettings/css/customsettings-edit.css" />
+</head>
+<body>
+    @Html.CreatePlatformNavigationMenu()
+    <div @Html.ApplyPlatformNavigation()>
+        <div class="custom-settings-admin">
+            <div class="dashboard-header">
+                <h1>Custom Settings</h1>
+                <p>Manage your website configuration settings</p>
+            </div>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="settings-grid">
+                    @foreach (var group in Model)
+                    {
+                        <a href="/customsettings/edit/@group.Id" class="settings-card">
+                            <div class="settings-card-header">
+                                <h2 class="settings-card-title">@group.Name</h2>
+                            </div>
+                            @if (!string.IsNullOrEmpty(group.Description))
+                            {
+                                <p class="settings-card-description">@group.Description</p>
+                            }
+                        </a>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <h2>No Settings Groups Found</h2>
+                    <p>Create a class decorated with [SettingsGroup] attribute to get started.</p>
+                </div>
+            }
+        </div>
+    </div>
+</body>
+</html>

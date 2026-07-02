@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main, support/cms12]
+  pull_request:
+    branches: [main, support/cms12]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore Avantibit.Optimizely.CustomSettings.slnx
+
+      - name: Build (library + sample)
+        run: dotnet build Avantibit.Optimizely.CustomSettings.slnx -c Release --no-restore
+
+      - name: Pack (dry run)
+        run: dotnet pack src/Avantibit.Optimizely.CustomSettings.csproj -c Release --no-build -o artifacts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nupkg-dryrun
+          path: artifacts/*.nupkg

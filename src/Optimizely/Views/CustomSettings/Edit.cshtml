@@ -1,0 +1,215 @@
+@using EPiServer.Framework.Web.Resources
+@using EPiServer.Shell.Navigation
+@model Avantibit.Optimizely.CustomSettings.Optimizely.Models.EditSettingsViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title>@Model.GroupName - Custom Settings</title>
+
+    <!-- Shell Core Resources -->
+    @ClientResources.RenderResources("ShellCore")
+
+    <!-- CMS Widgets (required for epi-cms Dojo modules like UrlSelector) -->
+    @ClientResources.RenderResources("epi-cms.widgets.base")
+
+    <!-- Light Theme -->
+    @ClientResources.RenderResources("ShellCoreLightTheme")
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Custom Settings Styles - from Static Web Assets -->
+    <link rel="stylesheet" href="~/_content/Avantibit.Optimizely.CustomSettings/css/customsettings-edit.css" />
+</head>
+<body>
+    @Html.CreatePlatformNavigationMenu()
+    <div @Html.ApplyPlatformNavigation()>
+        <div class="custom-settings-admin">
+            <div class="header">
+                <h1><i class="fas fa-cog"></i> @Model.GroupName</h1>
+                @if (!string.IsNullOrWhiteSpace(Model.GroupDescription))
+                {
+                    <p class="description">@Model.GroupDescription</p>
+                }
+            </div>
+
+            <div class="unsaved-changes-indicator" id="unsavedChangesIndicator" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>You have unsaved changes</span>
+            </div>
+
+            <div class="alert alert-success" id="successAlert" style="display: none;">
+                <i class="fas fa-check-circle"></i> Settings saved successfully!
+            </div>
+
+            <div class="alert alert-error" id="errorAlert" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i> <span id="errorMessage">An error occurred while saving settings.</span>
+            </div>
+
+            <div class="settings-edit-card">
+                <div class="context-selector">
+                    <div class="form-group">
+                        <label for="siteSelector">Site</label>
+                        <select id="siteSelector"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="languageSelector">Language</label>
+                        <select id="languageSelector"></select>
+                    </div>
+                </div>
+
+                <div id="loadingIndicator" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading settings...</p>
+                </div>
+
+                <form id="settingsForm" style="display: none;">
+                    <div id="formFields" class="settings-form"></div>
+
+                    <div class="actions">
+                        <button type="button" class="btn btn-danger" id="resetBtn">
+                            Reset to Defaults
+                        </button>
+                        <a href="/EPiServerPlugins/CustomSettings" class="btn btn-secondary">
+                            Back to List
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            Save Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pass groupId and currentSiteId to JavaScript -->
+    <script>
+        window.CUSTOMSETTINGS_GROUP_ID = '@Model.GroupId';
+        window.CUSTOMSETTINGS_CURRENT_SITE_ID = '@Model.CurrentSiteId';
+    </script>
+
+    <!-- Custom Settings Editor Script - from Static Web Assets -->
+    <script src="~/_content/Avantibit.Optimizely.CustomSettings/js/customsettings-edit.js"></script>
+
+    <!-- Custom dropdown component for context selectors -->
+    <script>
+    (function () {
+        function createCustomSelect(nativeSelect) {
+            if (nativeSelect.closest('.cs-dropdown')) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'cs-dropdown';
+            nativeSelect.parentNode.insertBefore(wrapper, nativeSelect);
+            wrapper.appendChild(nativeSelect);
+            nativeSelect.style.display = 'none';
+
+            const trigger = document.createElement('button');
+            trigger.type = 'button';
+            trigger.className = 'cs-dropdown__trigger';
+            trigger.setAttribute('aria-haspopup', 'listbox');
+            trigger.setAttribute('aria-expanded', 'false');
+
+            const valueSpan = document.createElement('span');
+            valueSpan.className = 'cs-dropdown__value';
+
+            const chevron = document.createElement('span');
+            chevron.className = 'cs-dropdown__chevron';
+            chevron.innerHTML = '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+            trigger.appendChild(valueSpan);
+            trigger.appendChild(chevron);
+            wrapper.appendChild(trigger);
+
+            const menu = document.createElement('ul');
+            menu.className = 'cs-dropdown__menu';
+            menu.setAttribute('role', 'listbox');
+            menu.hidden = true;
+            wrapper.appendChild(menu);
+
+            function syncValue() {
+                const sel = nativeSelect.options[nativeSelect.selectedIndex];
+                valueSpan.textContent = sel ? sel.textContent : '';
+                menu.querySelectorAll('.cs-dropdown__option').forEach(li => {
+                    li.setAttribute('aria-selected', li.dataset.value === nativeSelect.value ? 'true' : 'false');
+                });
+            }
+
+            function buildMenu() {
+                menu.innerHTML = '';
+                Array.from(nativeSelect.options).forEach(opt => {
+                    const li = document.createElement('li');
+                    li.className = 'cs-dropdown__option';
+                    li.setAttribute('role', 'option');
+                    li.setAttribute('aria-selected', opt.selected ? 'true' : 'false');
+                    li.textContent = opt.textContent;
+                    li.dataset.value = opt.value;
+                    li.addEventListener('click', function () {
+                        nativeSelect.value = opt.value;
+                        nativeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                        close();
+                    });
+                    menu.appendChild(li);
+                });
+                setTimeout(syncValue, 0);
+            }
+
+            function open() {
+                document.querySelectorAll('.cs-dropdown.is-open').forEach(function (d) {
+                    if (d !== wrapper) {
+                        d.querySelector('.cs-dropdown__menu').hidden = true;
+                        d.classList.remove('is-open');
+                        d.querySelector('.cs-dropdown__trigger').setAttribute('aria-expanded', 'false');
+                    }
+                });
+                menu.hidden = false;
+                wrapper.classList.add('is-open');
+                trigger.setAttribute('aria-expanded', 'true');
+            }
+
+            function close() {
+                menu.hidden = true;
+                wrapper.classList.remove('is-open');
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+
+            trigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                menu.hidden ? open() : close();
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!wrapper.contains(e.target)) close();
+            });
+
+            nativeSelect.addEventListener('change', syncValue);
+
+            new MutationObserver(buildMenu).observe(nativeSelect, { childList: true });
+
+            buildMenu();
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var form = document.getElementById('settingsForm');
+            if (!form) return;
+            var obs = new MutationObserver(function () {
+                if (form.style.display !== 'none') {
+                    obs.disconnect();
+                    ['siteSelector', 'languageSelector'].forEach(function (id) {
+                        var el = document.getElementById(id);
+                        if (el) createCustomSelect(el);
+                    });
+                }
+            });
+            obs.observe(form, { attributes: true, attributeFilter: ['style'] });
+        });
+    })();
+    </script>
+</body>
+</html>
