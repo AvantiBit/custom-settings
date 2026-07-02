@@ -16,7 +16,6 @@ public class CustomSettingsService<T> : ICustomSettingsService<T> where T : clas
     private readonly ISettingsCacheService _cacheService;
     private readonly ISiteContextResolver _siteContextResolver;
     private readonly ILanguageContextResolver _languageContextResolver;
-    private readonly ISettingsFallbackResolver _fallbackResolver;
     private readonly ILogger<CustomSettingsService<T>> _logger;
 
     /// <summary>
@@ -26,21 +25,18 @@ public class CustomSettingsService<T> : ICustomSettingsService<T> where T : clas
     /// <param name="cacheService">The cache service for optimized read performance.</param>
     /// <param name="siteContextResolver">The site context resolver.</param>
     /// <param name="languageContextResolver">The language context resolver.</param>
-    /// <param name="fallbackResolver">The settings fallback resolver.</param>
     /// <param name="logger">The logger instance.</param>
     public CustomSettingsService(
         ISettingsRepository repository,
         ISettingsCacheService cacheService,
         ISiteContextResolver siteContextResolver,
         ILanguageContextResolver languageContextResolver,
-        ISettingsFallbackResolver fallbackResolver,
         ILogger<CustomSettingsService<T>> logger)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
         _siteContextResolver = siteContextResolver ?? throw new ArgumentNullException(nameof(siteContextResolver));
         _languageContextResolver = languageContextResolver ?? throw new ArgumentNullException(nameof(languageContextResolver));
-        _fallbackResolver = fallbackResolver ?? throw new ArgumentNullException(nameof(fallbackResolver));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
