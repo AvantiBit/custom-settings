@@ -75,3 +75,7 @@ logs/
 /.dotnet_home
 /.nuget
 /src/modules/_protected
+
+# The CMS 12 sample lives on the support/cms12 branch; leftover build artifacts
+# from branch switches must never be committed here
+/samples/CustomSettings.Sample.Cms12/
