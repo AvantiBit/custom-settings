@@ -91,6 +91,8 @@ The following C# types are supported for settings class properties:
 | `DateTimeOffset` | `type: string, format: date-time` | ✅ `DateTimeOffset?` | Date/time picker |
 | `Guid` | `type: string, format: uuid` | ✅ `Guid?` | Text input |
 | `Uri` | `type: string, format: uri` | ✅ `Uri?` | URL input with `https://` placeholder |
+| `EPiServer.Url` | `type: string, format: url-picker` | ✅ `Url?` | Optimizely URL picker (pages, media, external links) |
+| `ContentReference` | `type: object, format: page-reference` | ✅ `ContentReference?` | Optimizely content picker; empty reference is stored as null |
 | `IList<string>` | `type: array, items: string` | — | Multi-value list with add/remove |
 | `List<string>` | `type: array, items: string` | — | Multi-value list with add/remove |
 | `string` + `[Url]` | `type: string, format: uri` | ✅ `string?` | URL input (string with validation) |
@@ -140,6 +142,7 @@ public class SiteSettings
 - All value types (`int`, `bool`, `DateTime`, `DateTimeOffset`, `Guid`) are automatically treated as **required** unless declared as nullable (`int?`, `DateTime?`, etc.)
 - `IList<string>` and `List<string>` are interchangeable — both produce the same array UI
 - `Uri` and `string + [Url]` both produce a URL input field with `https://` placeholder; use `Uri` when you want a typed property, `string` when you need plain string access
+- `EPiServer.Url` opens the Optimizely URL picker (link to pages, media, or external URLs), while `ContentReference` opens the Optimizely content picker for selecting a content item directly
 - Properties with unsupported types are **skipped with a warning** in the logs — they will not appear in the admin form
 
 
