@@ -76,3 +76,7 @@ logs/
 /.dotnet_home
 /.nuget
 /src/modules/_protected
+
+# The CMS 13 sample lives on the main branch; leftover build artifacts
+# from branch switches must never be committed here
+/samples/AvantiBit.Optimizely.CustomSettings.Sample.Cms13/
