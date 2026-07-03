@@ -1,6 +1,7 @@
 using Avantibit.Optimizely.CustomSettings.Attributes;
 using Avantibit.Optimizely.CustomSettings.Configuration;
 using Avantibit.Optimizely.CustomSettings.Discovery;
+using Avantibit.Optimizely.CustomSettings.Infrastructure;
 using Avantibit.Optimizely.CustomSettings.Persistence.Abstractions;
 using Avantibit.Optimizely.CustomSettings.Resolution;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,7 +65,7 @@ public class SettingsCacheService : ISettingsCacheService
                         try
                         {
                             var masterVal = prop.GetValue(masterValue);
-                            if (!IsNullOrDefault(masterVal))
+                            if (!SettingsValueHelper.IsNullOrDefault(masterVal))
                                 prop.SetValue(synthesized, masterVal);
                         }
                         catch (Exception ex)
@@ -188,10 +189,10 @@ public class SettingsCacheService : ISettingsCacheService
                     try
                     {
                         var currentVal = prop.GetValue(value);
-                        if (IsNullOrDefault(currentVal))
+                        if (SettingsValueHelper.IsNullOrDefault(currentVal))
                         {
                             var masterVal = prop.GetValue(masterValue);
-                            if (!IsNullOrDefault(masterVal))
+                            if (!SettingsValueHelper.IsNullOrDefault(masterVal))
                             {
                                 prop.SetValue(value, masterVal);
                             }
@@ -218,20 +219,6 @@ public class SettingsCacheService : ISettingsCacheService
             result[type] = props;
         }
         return result;
-    }
-
-    private static bool IsNullOrDefault(object? value)
-    {
-        if (value == null) return true;
-
-        var type = value.GetType();
-        if (type.IsValueType)
-            return value.Equals(Activator.CreateInstance(type));
-
-        if (value is string s)
-            return string.IsNullOrWhiteSpace(s);
-
-        return false;
     }
 
     private static List<PropertyInfo> GetOrComputeFallbackProperties<T>() where T : class
