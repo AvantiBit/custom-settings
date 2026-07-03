@@ -225,7 +225,6 @@ public class SettingsDiscoveryService : ISettingsDiscoveryService
             attribute.Name,
             type.FullName ?? Guid.NewGuid().ToString(),
             attribute.Description,
-            attribute.Icon,
             attribute.AuthorizationPolicy,
             attribute.SortOrder
             );

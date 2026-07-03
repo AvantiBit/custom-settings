@@ -6,7 +6,6 @@ namespace AvantiBit.Optimizely.CustomSettings.Sample.Cms13.Features;
 [SettingsGroup(
 Name = "Custom Settings for integration",
 Description = "Custom Settings for your API",
-Icon = "epi-icon--settings",
 SortOrder = 100,
 AuthorizationPolicy = "AdminsOnly")]
 public class IntegrationCustomSettings

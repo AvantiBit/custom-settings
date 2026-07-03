@@ -18,11 +18,6 @@ public class SettingsGroupAttribute : Attribute
     public string? Description { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the icon CSS class.
-    /// </summary>
-    public string? Icon { get; set; } = "placeholder";
-
-    /// <summary>
     /// Gets or sets the sort order for the settings group in the menu.
     /// Lower numbers appear first.
     /// </summary>

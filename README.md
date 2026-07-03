@@ -7,6 +7,8 @@ A library for managing custom settings in Optimizely CMS applications. This libr
 | 2.x | CMS 13 | main | samples/AvantiBit.Optimizely.CustomSettings.Sample.Cms13 |
 | 1.x | CMS 12 | support/cms12 | samples/CustomSettings.Sample.Cms12 |
 
+> **Upgrading from 1.x (CMS 12)?** CMS 13 replaces site definitions with *applications*, and this package derives its `SiteId` from the application name instead of the CMS 12 site definition GUID. Site-scoped settings stored by 1.x are therefore **not picked up automatically** after an upgrade — they remain in the `CustomSettings` table under the old site ID and must be migrated manually (update the `SiteId` column to the new application-derived ID). Global and language-only settings are unaffected.
+
 ## Features
 
 - **Type-safe settings management** - Define strongly-typed settings classes
@@ -171,7 +173,6 @@ namespace YourProject.Settings;
 [SettingsGroup(
     Name = "Site Configuration",
     Description = "General site configuration settings",
-    Icon = "epi-icon--settings",
     SortOrder = 100)]
 public class SiteSettings
 {
@@ -299,7 +300,6 @@ options.AddPolicy("EditorsAndAdmins", policy =>
 [SettingsGroup(
     Name = "Site Configuration",
     Description = "General site configuration settings",
-    Icon = "epi-icon--settings",
     SortOrder = 100,
     AuthorizationPolicy = "AdminsOnly")]  // must match a registered policy name
 public class SiteSettings
@@ -328,7 +328,6 @@ Marks a class as a custom settings group.
 **Properties:**
 - `Name` (string, required) - Display name in the admin interface
 - `Description` (string, optional) - Description shown in the admin interface
-- `Icon` (string, optional) - CSS class for the icon (default: "placeholder")
 - `SortOrder` (int, optional) - Order in the menu (default: 100)
 - `AuthorizationPolicy` (string, optional) - Authorization policy name
 
