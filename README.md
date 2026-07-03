@@ -112,42 +112,46 @@ The following C# types are supported for settings class properties:
 ### Usage Examples
 
 ```csharp
-[SettingsGroup(Name = "Site Settings")]
-public class SiteSettings
+[SettingsGroup(Name = "Integration Settings")]
+public class IntegrationSettings
 {
     // Basic types
-    [Display(Name = "Site Name")]
-    public string SiteName { get; set; } = "My Site";
+    [Display(Name = "GTM Container ID")]
+    public string? GtmContainerId { get; set; }
 
-    [Display(Name = "Items Per Page")]
-    [Range(1, 100)]
-    public int ItemsPerPage { get; set; } = 10;
+    [Display(Name = "ERP Sync Batch Size")]
+    [Range(1, 5000)]
+    public int ErpSyncBatchSize { get; set; } = 500;
 
-    [Display(Name = "Enable Analytics")]
-    public bool EnableAnalytics { get; set; }
+    [Display(Name = "Enable Product Feed")]
+    public bool EnableProductFeed { get; set; }
 
     // DateTime
-    [Display(Name = "Launch Date")]
-    public DateTime? LaunchDate { get; set; }
+    [Display(Name = "Maintenance Window Start (UTC)")]
+    public DateTime? MaintenanceWindowStart { get; set; }
 
     // Guid
-    [Display(Name = "Tracking ID")]
-    public Guid TrackingId { get; set; } = Guid.NewGuid();
+    [Display(Name = "ODP Tracker ID")]
+    public Guid? OdpTrackerId { get; set; }
 
     // URL — using Uri type
-    [Display(Name = "External API URL")]
-    public Uri? ExternalApiUrl { get; set; }
+    [Display(Name = "ERP API Base URL")]
+    public Uri? ErpApiBaseUrl { get; set; }
 
     // URL — using string with [Url] attribute
     [Url]
-    [Display(Name = "Website URL")]
-    public string? WebsiteUrl { get; set; }
+    [Display(Name = "Service Status Page")]
+    public string? ServiceStatusPageUrl { get; set; }
 
     // Multi-value string list
-    [Display(Name = "Allowed Domains")]
-    public IList<string> AllowedDomains { get; set; } = new List<string>();
+    [Display(Name = "Trusted Redirect Hosts")]
+    public IList<string> TrustedRedirectHosts { get; set; } = new List<string>();
 }
 ```
+
+For `EPiServer.Url` and `ContentReference` examples, see the `CommerceSettings` class under [Usage](#usage).
+
+> **Keep secrets out of settings.** Values managed here are editable in the admin UI and stored in the database. Identifiers and endpoints (container IDs, base URLs) are a good fit; API keys, connection strings, and other secrets belong in your configuration providers (environment variables, user secrets, key vault).
 
 ### Notes
 
@@ -165,37 +169,49 @@ Create a class decorated with the `[SettingsGroup]` attribute:
 
 ```csharp
 using Avantibit.Optimizely.CustomSettings.Attributes;
+using EPiServer;
+using EPiServer.Core;
 using System.ComponentModel.DataAnnotations;
 
 namespace YourProject.Settings;
 
 [SettingsGroup(
-    Name = "Site Configuration",
-    Description = "General site configuration settings",
+    Name = "Commerce Settings",
+    Description = "Store-wide commerce behavior",
     SortOrder = 100)]
-public class SiteSettings
+public class CommerceSettings
 {
-    [Display(Name = "Items Per Page")]
-    [Range(1, 100)]
-    public int ItemsPerPage { get; set; } = 10;
-
-    [Display(Name = "Enable Analytics")]
-    public bool EnableAnalytics { get; set; } = true;
-
-    [Display(Name = "Default Language")]
+    [Display(Name = "Default Currency")]
     [Required]
-    public string DefaultLanguage { get; set; } = "en";
+    public string DefaultCurrency { get; set; } = "EUR";
 
-    [Display(Name = "Contact Email")]
+    [Display(Name = "Free Shipping Threshold")]
+    [Range(0, 10000)]
+    public int FreeShippingThreshold { get; set; } = 50;
+
+    [Display(Name = "Low Stock Warning Threshold")]
+    [Range(0, 1000)]
+    public int LowStockThreshold { get; set; } = 5;
+
+    [Display(Name = "Enable Click & Collect")]
+    public bool EnableClickAndCollect { get; set; }
+
+    // Per-market override; falls back to the master-language value when empty
+    [Display(Name = "Customer Service Email")]
     [EmailAddress]
-    public string ContactEmail { get; set; } = "contact@example.com";
+    [FallbackToMasterLanguage]
+    public string? CustomerServiceEmail { get; set; }
 
-    [Display(Name = "Max Upload Size (MB)")]
-    [Range(1, 500)]
-    public int MaxUploadSize { get; set; } = 50;
+    [Display(Name = "Order Notification Recipients")]
+    public IList<string> OrderNotificationRecipients { get; set; } = new List<string>();
 
-    [Display(Name = "Enable Maintenance Mode")]
-    public bool EnableMaintenanceMode { get; set; } = false;
+    // Optimizely content picker
+    [Display(Name = "Terms & Conditions Page")]
+    public ContentReference? TermsPage { get; set; }
+
+    // Optimizely URL picker (page, media, or external URL)
+    [Display(Name = "Returns Portal")]
+    public Url? ReturnsPortal { get; set; }
 }
 ```
 
@@ -206,11 +222,11 @@ In your controllers, views, or services, inject `ICustomSettingsService<T>`:
 ```csharp
 using Avantibit.Optimizely.CustomSettings.Configuration;
 
-public class HomeController : Controller
+public class CheckoutController : Controller
 {
-    private readonly ICustomSettingsService<SiteSettings> _settingsService;
+    private readonly ICustomSettingsService<CommerceSettings> _settingsService;
 
-    public HomeController(ICustomSettingsService<SiteSettings> settingsService)
+    public CheckoutController(ICustomSettingsService<CommerceSettings> settingsService)
     {
         _settingsService = settingsService;
     }
@@ -219,10 +235,11 @@ public class HomeController : Controller
     {
         // Get settings for current site and language
         var settings = await _settingsService.GetAsync();
-        
-        ViewBag.SiteName = settings.SiteName;
-        ViewBag.ItemsPerPage = settings.ItemsPerPage;
-        
+
+        ViewBag.Currency = settings.DefaultCurrency;
+        ViewBag.FreeShippingThreshold = settings.FreeShippingThreshold;
+        ViewBag.CustomerServiceEmail = settings.CustomerServiceEmail;
+
         return View();
     }
 }
@@ -231,12 +248,12 @@ public class HomeController : Controller
 ### 3. Save Settings Programmatically
 
 ```csharp
-public async Task UpdateSettings()
+public async Task EnableClickAndCollectAsync()
 {
     var settings = await _settingsService.GetAsync();
-    settings.SiteName = "Updated Site Name";
-    settings.ItemsPerPage = 20;
-    
+    settings.EnableClickAndCollect = true;
+    settings.LowStockThreshold = 10;
+
     await _settingsService.SaveAsync(settings);
 }
 ```
@@ -295,16 +312,18 @@ options.AddPolicy("EditorsAndAdmins", policy =>
 
 #### Step 2 — Apply the policy to your settings class
 
+Integration configuration is a natural candidate — editors rarely need to see it.
+
 ```csharp
 [SettingsGroup(
-    Name = "Site Configuration",
-    Description = "General site configuration settings",
-    SortOrder = 100,
+    Name = "Integration Settings",
+    Description = "Third-party service configuration",
+    SortOrder = 200,
     AuthorizationPolicy = "AdminsOnly")]  // must match a registered policy name
-public class SiteSettings
+public class IntegrationSettings
 {
-    [Display(Name = "Site Name")]
-    public string SiteName { get; set; } = "My Site";
+    [Display(Name = "ERP API Base URL")]
+    public Uri? ErpApiBaseUrl { get; set; }
 }
 ```
 
@@ -336,7 +355,7 @@ Marks a property to fall back to the master/default language value when the curr
 **Usage:**
 ```csharp
 [FallbackToMasterLanguage]
-public string SiteName { get; set; }
+public string? CustomerServiceEmail { get; set; }
 ```
 
 ### Interfaces
