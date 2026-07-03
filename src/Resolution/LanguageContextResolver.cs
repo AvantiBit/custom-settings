@@ -1,4 +1,7 @@
-﻿using EPiServer.DataAbstraction;
+﻿using EPiServer;
+using EPiServer.Applications;
+using EPiServer.Core;
+using EPiServer.DataAbstraction;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using Microsoft.Extensions.Logging;
@@ -14,13 +17,19 @@ namespace Avantibit.Optimizely.CustomSettings.Resolution;
 public class LanguageContextResolver : ILanguageContextResolver
 {
     private readonly ILanguageBranchRepository _languageBranchRepository;
+    private readonly IApplicationRepository _applicationRepository;
+    private readonly IContentRepository _contentRepository;
     private readonly ILogger<LanguageContextResolver> _logger;
 
     public LanguageContextResolver(
         ILanguageBranchRepository languageBranchRepository,
+        IApplicationRepository applicationRepository,
+        IContentRepository contentRepository,
         ILogger<LanguageContextResolver> logger)
     {
         _languageBranchRepository = languageBranchRepository ?? throw new ArgumentNullException(nameof(languageBranchRepository));
+        _applicationRepository = applicationRepository ?? throw new ArgumentNullException(nameof(applicationRepository));
+        _contentRepository = contentRepository ?? throw new ArgumentNullException(nameof(contentRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -132,10 +141,86 @@ public class LanguageContextResolver : ILanguageContextResolver
         return "en";
     }
 
+    /// <summary>
+    /// Gets available languages for a specific site (application).
+    /// </summary>
+    /// <param name="siteId">The site ID (derived from the application name).</param>
+    /// <returns>A collection of language codes available for the specified site.</returns>
     public IEnumerable<string> GetAvailableLanguagesForSite(Guid siteId)
     {
-        // In CMS 13, language configuration is global (ILanguageBranchRepository).
-        // Site-specific language filtering via SiteDefinition is no longer available.
-        return GetAvailableLanguages();
+        try
+        {
+            var application = _applicationRepository.List()
+                .FirstOrDefault(a => SiteContextResolver.GenerateApplicationId(a.Name) == siteId);
+
+            if (application is null)
+            {
+                _logger.LogWarning("Application not found: {SiteId}", siteId);
+                return GetAvailableLanguages();
+            }
+
+            _logger.LogInformation("Checking languages for application {SiteId} ({AppName})", siteId, application.Name);
+
+            if (application is IRoutableApplication routable)
+            {
+                // Try to get languages from the application's entry point content
+                if (!ContentReference.IsNullOrEmpty(routable.EntryPoint))
+                {
+                    try
+                    {
+                        var languageBranches = _contentRepository.GetLanguageBranches<IContent>(routable.EntryPoint);
+                        var existingLanguages = languageBranches
+                            .OfType<ILocalizable>()
+                            .Where(l => l.Language != null)
+                            .Select(l => l.Language.TwoLetterISOLanguageName)
+                            .Distinct()
+                            .ToList();
+
+                        if (existingLanguages.Count > 0)
+                        {
+                            _logger.LogInformation(
+                                "Found {Count} languages for application {SiteId} from entry point: {Languages}",
+                                existingLanguages.Count,
+                                siteId,
+                                string.Join(", ", existingLanguages));
+
+                            return existingLanguages;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Could not load entry point for application {SiteId}", siteId);
+                    }
+                }
+
+                var hostLanguages = routable.Hosts
+                    .Where(h => h.Locale != null)
+                    .Select(h => h.Locale!.TwoLetterISOLanguageName)
+                    .Distinct()
+                    .ToList();
+
+                if (hostLanguages.Count > 0)
+                {
+                    _logger.LogInformation(
+                        "Found {Count} languages for application {SiteId} from host definitions: {Languages}",
+                        hostLanguages.Count,
+                        siteId,
+                        string.Join(", ", hostLanguages));
+
+                    return hostLanguages;
+                }
+            }
+
+            _logger.LogInformation(
+                "No application-specific languages found for {SiteId}, returning all enabled languages",
+                siteId);
+
+            return GetAvailableLanguages();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving languages for site {SiteId}", siteId);
+            return GetAvailableLanguages();
+        }
     }
 }
